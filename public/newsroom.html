@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Newsroom — NewsAI</title>
+  <meta name="description" content="Browse the full archive of AI-written immigration news. Filter by category, search by keyword.">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <!-- Grain texture -->
+  <svg class="grain" width="100%" height="100%">
+    <filter id="grain-filter">
+      <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="4" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+    <rect width="100%" height="100%" filter="url(#grain-filter)" opacity="0.08"/>
+  </svg>
+
+  <!-- Masthead -->
+  <header class="masthead">
+    <div class="masthead-top">
+      <div class="masthead-left">
+        <span class="masthead-date" id="current-date"></span>
+      </div>
+      <div class="masthead-center">
+        <h1 class="masthead-title">NewsAI</h1>
+        <p class="masthead-tagline">Immigration News, Written by AI</p>
+      </div>
+      <div class="masthead-right">
+        <span class="masthead-stat">
+          <span class="pulse"></span>
+          <span id="agent-count">10</span> sources tracked
+        </span>
+      </div>
+    </div>
+    <div class="masthead-rule"></div>
+    <nav class="nav">
+      <a href="/" class="nav-link">Today's Edition</a>
+      <a href="/newsroom" class="nav-link is-active">Newsroom</a>
+      <a href="/sources" class="nav-link">Sources</a>
+    </nav>
+    <div class="masthead-rule thin"></div>
+  </header>
+
+  <!-- Stats banner -->
+  <div class="stats-banner" id="stats-banner">
+    <div class="stat-item">
+      <span class="stat-number" id="stat-total">--</span>
+      <span class="stat-label">Total Articles</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number" id="stat-sources">--</span>
+      <span class="stat-label">Active Sources</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number" id="stat-today">--</span>
+      <span class="stat-label">Published Today</span>
+    </div>
+  </div>
+
+  <!-- Search + Filters -->
+  <div class="newsroom-controls">
+    <div class="search-wrap">
+      <input type="text" class="search-input" id="search-input" placeholder="Search headlines...">
+    </div>
+    <div class="filters" style="margin:0; padding:0;">
+      <button class="filter-pill is-active" data-category="all">All</button>
+      <button class="filter-pill" data-category="policy">Policy</button>
+      <button class="filter-pill" data-category="visa">Visa & Green Card</button>
+      <button class="filter-pill" data-category="enforcement">Enforcement</button>
+      <button class="filter-pill" data-category="courts">Court Rulings</button>
+      <button class="filter-pill" data-category="asylum">Asylum</button>
+      <button class="filter-pill" data-category="general">General</button>
+    </div>
+  </div>
+
+  <!-- Article list -->
+  <main class="newsroom-list" id="newsroom-list">
+    <!-- Populated by JS -->
+  </main>
+
+  <!-- Load more -->
+  <div class="load-more-wrap" id="load-more-wrap" style="display:none;">
+    <button class="btn-load-more" id="btn-load-more">Load more articles</button>
+  </div>
+
+  <!-- Empty state -->
+  <div class="empty-state" id="empty-state" style="display:none;">
+    <div class="empty-icon">🔍</div>
+    <h2>No articles found.</h2>
+    <p>Try a different search term or category filter.</p>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-rule"></div>
+    <p class="footer-text">NewsAI is an experiment in AI journalism. All articles are written by AI agents and should be verified against original sources.</p>
+    <p class="footer-sub">Built by <a href="https://tinybuild.studio">TinyBuild Studio</a></p>
+  </footer>
+
+  <script src="/helpers.js"></script>
+  <script src="/newsroom.js"></script>
+</body>
+</html>

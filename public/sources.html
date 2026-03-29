@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NewsAI — Immigration News, Written by AI</title>
-  <meta name="description" content="AI-powered immigration news. Policy changes, visa updates, court rulings, and enforcement news — analyzed and explained by AI agents.">
+  <title>Sources — NewsAI</title>
+  <meta name="description" content="See every source NewsAI tracks. Official government sites, major news outlets, and trusted immigration publications.">
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
@@ -36,53 +36,49 @@
     </div>
     <div class="masthead-rule"></div>
     <nav class="nav">
-      <a href="/" class="nav-link is-active">Today's Edition</a>
+      <a href="/" class="nav-link">Today's Edition</a>
       <a href="/newsroom" class="nav-link">Newsroom</a>
-      <a href="/sources" class="nav-link">Sources</a>
+      <a href="/sources" class="nav-link is-active">Sources</a>
     </nav>
     <div class="masthead-rule thin"></div>
   </header>
 
-  <!-- Category filters -->
-  <div class="filters">
+  <!-- Sources intro -->
+  <section class="sources-intro">
+    <h2 class="sources-title">Our Sources</h2>
+    <p class="sources-description">NewsAI aggregates immigration news from official government websites, established news outlets, and trusted immigration publications. Our AI agents monitor these sources around the clock, ensuring you get timely, comprehensive coverage.</p>
+    <div class="stats-banner" id="stats-banner">
+      <div class="stat-item">
+        <span class="stat-number" id="stat-sources">--</span>
+        <span class="stat-label">Active Sources</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number" id="stat-articles">--</span>
+        <span class="stat-label">Articles Written</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number" id="stat-today">--</span>
+        <span class="stat-label">Published Today</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Category filter -->
+  <div class="filters" id="source-filters">
     <button class="filter-pill is-active" data-category="all">All</button>
-    <button class="filter-pill" data-category="policy">Policy</button>
-    <button class="filter-pill" data-category="visa">Visa & Green Card</button>
-    <button class="filter-pill" data-category="enforcement">Enforcement</button>
-    <button class="filter-pill" data-category="courts">Court Rulings</button>
-    <button class="filter-pill" data-category="asylum">Asylum</button>
-    <button class="filter-pill" data-category="general">General</button>
+    <!-- Populated by JS from actual source categories -->
   </div>
 
-  <!-- Main content area -->
-  <main class="edition">
-    <!-- Hero / lead story -->
-    <article class="story story-hero" id="hero-story">
-      <div class="story-category-label"></div>
-      <h2 class="story-headline"></h2>
-      <p class="story-summary"></p>
-      <div class="story-meta">
-        <span class="story-source"></span>
-        <span class="story-time"></span>
-      </div>
-    </article>
-
-    <!-- Two-column grid -->
-    <div class="stories-grid" id="stories-grid">
-      <!-- Populated by JS -->
-    </div>
-
-    <!-- Load more -->
-    <div class="load-more-wrap" id="load-more-wrap" style="display:none;">
-      <button class="btn-load-more" id="btn-load-more">More headlines</button>
-    </div>
+  <!-- Sources grid -->
+  <main class="sources-grid" id="sources-grid">
+    <!-- Populated by JS -->
   </main>
 
   <!-- Empty state -->
   <div class="empty-state" id="empty-state" style="display:none;">
     <div class="empty-icon">📡</div>
-    <h2>Agents are gathering the news.</h2>
-    <p>The first edition is being prepared. Check back soon — our AI agents are scraping, analyzing, and writing immigration news from 10 sources.</p>
+    <h2>Loading sources...</h2>
+    <p>Our source list is being prepared.</p>
   </div>
 
   <!-- Footer -->
@@ -93,6 +89,6 @@
   </footer>
 
   <script src="/helpers.js"></script>
-  <script src="/app.js"></script>
+  <script src="/sources.js"></script>
 </body>
 </html>

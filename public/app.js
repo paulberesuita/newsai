@@ -11,17 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setDate();
   loadArticles();
   setupFilters();
-  setupModal();
 });
-
-// ─── Date ────────────────────────────────────────────────────────────
-
-function setDate() {
-  const el = document.getElementById('current-date');
-  const now = new Date();
-  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-  el.textContent = now.toLocaleDateString('en-US', options);
-}
 
 // ─── Load Articles ───────────────────────────────────────────────────
 
@@ -75,7 +65,7 @@ function render() {
   heroEl.querySelector('.story-summary').textContent = hero.summary;
   heroEl.querySelector('.story-source').textContent = hero.source_name;
   heroEl.querySelector('.story-time').textContent = timeAgo(hero.published_at);
-  heroEl.onclick = () => openArticle(hero);
+  heroEl.onclick = () => window.location.href = `/article/${hero.slug || hero.id}`;
 
   // Grid = rest of articles, in two columns with divider
   const rest = articles.slice(1);
@@ -115,7 +105,7 @@ function createStoryCard(article) {
       <span class="story-time">${timeAgo(article.published_at)}</span>
     </div>
   `;
-  el.onclick = () => openArticle(article);
+  el.onclick = () => window.location.href = `/article/${article.slug || article.id}`;
   return el;
 }
 
@@ -124,8 +114,8 @@ function createStoryCard(article) {
 function setupFilters() {
   document.querySelectorAll('.filter-pill').forEach(pill => {
     pill.addEventListener('click', () => {
-      document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
+      document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('is-active'));
+      pill.classList.add('is-active');
       currentCategory = pill.dataset.category;
       offset = 0;
       loadArticles();
@@ -136,90 +126,4 @@ function setupFilters() {
     offset += LIMIT;
     loadArticles(true);
   });
-}
-
-// ─── Modal ───────────────────────────────────────────────────────────
-
-function setupModal() {
-  const overlay = document.getElementById('modal-overlay');
-  const closeBtn = document.getElementById('modal-close');
-
-  closeBtn.addEventListener('click', () => overlay.classList.remove('open'));
-  overlay.addEventListener('click', (e) => {
-    if (e.target === overlay) overlay.classList.remove('open');
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') overlay.classList.remove('open');
-  });
-}
-
-function openArticle(article) {
-  document.getElementById('modal-category').textContent = formatCategory(article.category);
-  document.getElementById('modal-headline').textContent = article.headline;
-  document.getElementById('modal-source').textContent = article.source_name;
-  document.getElementById('modal-time').textContent = timeAgo(article.published_at);
-  document.getElementById('modal-body').innerHTML = renderMarkdown(article.body);
-  document.getElementById('modal-source-link').href = article.source_url;
-  document.getElementById('modal-overlay').classList.add('open');
-}
-
-// ─── Helpers ─────────────────────────────────────────────────────────
-
-function formatCategory(cat) {
-  const labels = {
-    policy: 'Policy',
-    visa: 'Visa & Green Card',
-    enforcement: 'Enforcement',
-    courts: 'Court Rulings',
-    asylum: 'Asylum & Refugees',
-    daca: 'DACA',
-    general: 'Immigration'
-  };
-  return labels[cat] || 'Immigration';
-}
-
-function timeAgo(dateStr) {
-  if (!dateStr) return '';
-  const date = new Date(dateStr + (dateStr.includes('Z') ? '' : 'Z'));
-  const now = new Date();
-  const diff = Math.floor((now - date) / 1000);
-
-  if (diff < 60) return 'Just now';
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
-
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
-
-function escapeHtml(str) {
-  if (!str) return '';
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}
-
-function renderMarkdown(md) {
-  if (!md) return '';
-  return md
-    // Headers
-    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-    .replace(/^## (.+)$/gm, '<h3>$1</h3>')
-    // Bold
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    // Italic
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    // Links
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
-    // Unordered lists
-    .replace(/^- (.+)$/gm, '<li>$1</li>')
-    .replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>')
-    // Paragraphs
-    .replace(/\n\n/g, '</p><p>')
-    .replace(/^(?!<[hulo])(.+)$/gm, '<p>$1</p>')
-    // Clean up
-    .replace(/<p><\/p>/g, '')
-    .replace(/<p>(<[hulo])/g, '$1')
-    .replace(/(<\/[hulo][^>]*>)<\/p>/g, '$1');
 }

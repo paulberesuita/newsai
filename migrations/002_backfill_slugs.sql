@@ -1,0 +1,10 @@
+UPDATE articles SET slug = 'cbp-announces-progress-combating-human-trafficking-smuggling-southwest-border' WHERE id = 1;
+UPDATE articles SET slug = 'immigration-news' WHERE id = 2;
+UPDATE articles SET slug = 'uscis-expands-immigration-judge-force-tackle-backlog' WHERE id = 3;
+UPDATE articles SET slug = 'immigration-reform-bill-clears-house-faces-uncertain-senate' WHERE id = 4;
+UPDATE articles SET slug = 'unauthorized-immigrant-population-us-reaches-new-high' WHERE id = 5;
+UPDATE articles SET slug = 'uscis-launches-new-news-hub-immigration-updates' WHERE id = 6;
+UPDATE articles SET slug = 'uscis-update-green-card-renewal-process-march-2023' WHERE id = 7;
+UPDATE articles SET slug = 'uscis-launches-immigration-citizenship-learning-center' WHERE id = 8;
+UPDATE articles SET slug = 'new-bill-aims-provide-relief-afghan-refugees' WHERE id = 9;
+UPDATE articles SET slug = 'access-historical-media-releases-congressional-testimony' WHERE id = 10;
