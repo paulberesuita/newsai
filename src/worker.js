@@ -588,6 +588,22 @@ async function getEditions(env) {
   return results;
 }
 
+// ─── HOUSE STYLE ───────────────────────────────────────────────────────
+// The paper's style sheet, shared by every line of Spanish the Worker still
+// writes (email subject, legacy translations). The daily routine carries the
+// same sheet, so a story reads the same whoever wrote it.
+const ESTILO =
+  'Español latinoamericano neutro, trato de usted. ' +
+  'Fechas en palabras: "6 de septiembre", "el 1 de septiembre de 2026", nunca "Sept. 6" ni "9/6". ' +
+  '"Estados Unidos" con todas sus letras, nunca "U.S." ni "EE. UU.". ' +
+  'Siglas: en la primera mención el nombre en español y la sigla entre paréntesis, por ejemplo ' +
+  '"el Servicio de Inmigración y Control de Aduanas (ICE)", "el Departamento de Seguridad Nacional (DHS)", ' +
+  '"el Servicio de Ciudadanía e Inmigración (USCIS)"; después solo la sigla. ' +
+  'Lugares en su forma española cuando existe: Nueva York, Filadelfia, Indianápolis, Carolina del Norte, Luisiana. ' +
+  'Cifras con coma de millar (50,000); montos como "5,130 dólares"; porcentajes como "12%". ' +
+  'Nunca "ilegal" para una persona: "sin papeles" o "indocumentado". "Green card" se queda en inglés; "cita de control" para check-in; "redada" para raid. ' +
+  'Sin guiones largos, sin comillas tipográficas, con signos de apertura ¿ y ¡.';
+
 // ─── SPANISH TRANSLATION (Gemini, cached in D1) ────────────────────────
 
 // The story body (markdown, written in English by the morning routine) into
@@ -595,10 +611,10 @@ async function getEditions(env) {
 async function translateBody(a, env) {
   if (!env.GEMINI_API_KEY) throw new Error('GEMINI_API_KEY not set');
   const prompt =
-    'Traduce este texto de una nota de noticias de inmigración al español latinoamericano neutro, ' +
-    'para un periódico serio. Reglas: claro y directo, cifras, fechas, siglas y nombres propios intactos, ' +
-    'sin comillas tipográficas, sin guiones largos, sin anglicismos innecesarios. Conserva exactamente la ' +
-    'estructura markdown (encabezados con ##, viñetas con -, párrafos) y traduce también los encabezados. ' +
+    'Traduce este texto de una nota de noticias de inmigración al español, para un periódico serio. ' +
+    'Claro y directo, cifras y nombres propios intactos, sin anglicismos innecesarios. Libro de estilo: ' + ESTILO + ' ' +
+    'Conserva exactamente la estructura markdown (encabezados con ##, viñetas con -, párrafos) y traduce también los ' +
+    'encabezados, con estos nombres: "Datos clave", "Contexto", "Qué significa esto", "Qué hacer ahora". ' +
     'Devuelve SOLO el markdown traducido, sin comentarios.\n\n' + a.body;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 25000);
@@ -629,9 +645,9 @@ async function translateArticles(items, env) {
 
   const payload = items.map(a => ({ id: a.id, headline: a.headline, summary: a.summary }));
   const prompt =
-    'Traduce estos titulares y resúmenes de noticias de inmigración al español latinoamericano neutro, ' +
-    'para un sitio de noticias serio. Reglas: claro y directo, cifras y nombres propios intactos, ' +
-    'sin comillas tipográficas, sin guiones largos, sin anglicismos innecesarios. ' +
+    'Traduce estos titulares y resúmenes de noticias de inmigración al español, para un periódico serio. ' +
+    'Claro y directo, cifras y nombres propios intactos, sin anglicismos innecesarios. Libro de estilo: ' + ESTILO + ' ' +
+    'En titulares y resúmenes las siglas van solas, sin expandir. ' +
     'Los titulares además se condensan al traducir: máximo 12 palabras, recorta el relleno y las ' +
     'subordinadas sin perder el hecho principal ni el actor. ' +
     'Devuelve SOLO un arreglo JSON con la forma [{"id": 1, "headline_es": "...", "summary_es": "..."}].\n\n' +
@@ -765,8 +781,18 @@ async function ingestArticles(items, env) {
 
   for (const item of items) {
     try {
-      if (!item.source_url || !item.headline || !item.summary || !item.body) {
-        errors.push({ source_url: item.source_url || null, error: 'missing required field (source_url, headline, summary, body)' });
+      // Since 2026-09-08 the routine writes the story in Spanish (headline_es,
+      // summary_es, body_es) and sends a short English headline + summary for
+      // the agent surface and the art. An English body is optional now; the
+      // old English-only payload still works and gets translated at read time.
+      const bodyEs = typeof item.body_es === 'string' ? item.body_es.trim() : '';
+      const bodyEn = typeof item.body === 'string' ? item.body.trim() : '';
+      if (!item.source_url || !item.headline || !item.summary || (!bodyEs && !bodyEn)) {
+        errors.push({ source_url: item.source_url || null, error: 'missing required field (source_url, headline, summary, and body_es or body)' });
+        continue;
+      }
+      if (bodyEs && bodyEs.length < 200) {
+        errors.push({ source_url: item.source_url, error: 'body_es too short' });
         continue;
       }
 
@@ -795,9 +821,13 @@ async function ingestArticles(items, env) {
       ).bind(sourceId, item.headline, item.source_url, item.summary, item.published_at || null).first();
 
       const art = await env.DB.prepare(
-        `INSERT INTO articles (raw_article_id, source_id, headline, summary, body, category, source_name, source_url, image_url, published_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, COALESCE(?, datetime('now'))) RETURNING id`
-      ).bind(raw.id, sourceId, item.headline, item.summary, item.body, item.category || 'general', item.source_name || 'Unknown', item.source_url, imageUrl, item.published_at || null).first();
+        `INSERT INTO articles (raw_article_id, source_id, headline, summary, body, headline_es, summary_es, body_es, category, source_name, source_url, image_url, published_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, COALESCE(?, datetime('now'))) RETURNING id`
+      ).bind(
+        raw.id, sourceId, item.headline, item.summary, bodyEn,
+        item.headline_es?.trim() || null, item.summary_es?.trim() || null, bodyEs || null,
+        item.category || 'general', item.source_name || 'Unknown', item.source_url, imageUrl, item.published_at || null
+      ).first();
 
       inserted++;
 
@@ -953,7 +983,8 @@ async function generateEmailSubject(lead, env) {
   const prompt =
     'Escribe el asunto de correo para la edición de hoy de un diario serio de noticias de inmigración en español. ' +
     'Máximo 8 palabras. Directo y concreto, cifras y nombres propios intactos, sin punto final, sin comillas, ' +
-    'sin dos puntos, sin emojis, sin sensacionalismo. Devuelve SOLO el asunto.\n\n' +
+    'sin dos puntos, sin emojis, sin sensacionalismo. Siglas solas, sin expandir. Libro de estilo: ' + ESTILO + ' ' +
+    'Devuelve SOLO el asunto.\n\n' +
     `Noticia principal:\nTitular: ${headline}\nResumen: ${lead.summary_es || lead.summary || ''}`;
 
   const controller = new AbortController();

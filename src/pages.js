@@ -611,7 +611,7 @@ ${recientes}
 - \`GET ${ORIGIN}/api/portada?date=YYYY-MM-DD\` — la edición de ese día.
 - \`GET ${ORIGIN}/api/editions\` — todas las ediciones: \`[{ day, count, lead }]\`, la más nueva primero.
 - \`GET ${ORIGIN}/api/articles?limit=&offset=&category=&date=\` — noticias sueltas, las más nuevas primero.
-- \`GET ${ORIGIN}/api/article/:id\` — una noticia completa (\`body\` en inglés, \`body_es\` en español cuando ya está traducido).
+- \`GET ${ORIGIN}/api/article/:id\` — una noticia completa (\`body_es\` es la nota tal como se escribió, en español; \`body\` trae la versión en inglés solo en notas anteriores a septiembre de 2026).
 - \`POST ${ORIGIN}/api/subscribe\` con \`{"email": "..."}\` — suscribe un correo a la edición diaria (confirma con la persona antes de usarla).
 
 ## MCP

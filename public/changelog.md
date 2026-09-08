@@ -1,5 +1,12 @@
 # Diario Migrante Changelog
 
+## September 8, 2026 — Escrito en español
+
+- Starting with tomorrow's edition, every story is written in Spanish from the first word. Until today the morning agent wrote in English and a translator turned it into Spanish at publish time, and the seams showed: "Sept. 6" for a date, "U.S." for the country, an agency's name left in English halfway down a paragraph.
+- The paper has a house style now, a libro de estilo both writers follow: dates in words ("el 6 de septiembre"), "Estados Unidos" spelled out, every agency named in Spanish with its sigla on first mention, place names with their accents (Indianápolis, Filadelfia), never "ilegal" for a person. The weekly Las herramientas pages follow the same sheet.
+- Every story keeps the same four parts under the same names: Datos clave, Contexto, Qué significa esto, Qué hacer ahora.
+- For agents: `body_es` is the story as written; `body` carries an English version only on stories from before September 8, 2026.
+
 ## September 1, 2026 — Las herramientas
 
 - The paper has a reference desk now. **diariomigrante.com/herramientas** holds four pages in plain Spanish, each answering one question people search: how long USCIS is taking on each form, what this month's visa bulletin means for your category, what every common form costs (and how to pay less), and where the TPS stands country by country.
